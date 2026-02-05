@@ -26,3 +26,9 @@ class Parcel(Base):
     # Addresses
     pickup_address = Column(String, nullable=False)
     destination_address = Column(String, nullable=False)
+
+    # Coordinates
+    pickup_lat = Column(Float, nullable=False)
+    pickup_lng = Column(Float, nullable=False)
+    destination_lat = Column(Float, nullable=False)
+    destination_lng = Column(Float, nullable=False)
