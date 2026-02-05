@@ -25,3 +25,10 @@ class ParcelBase(BaseModel):
 
 class ParcelCreate(ParcelBase):
     pass
+
+class ParcelUpdate(BaseModel):
+    destination_address: Optional[str] = None
+    destination_lat: Optional[float] = None
+    destination_lng: Optional[float] = None
+    status: Optional[ParcelStatus] = None
+    present_location: Optional[str] = None
