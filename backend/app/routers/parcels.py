@@ -56,3 +56,36 @@ def create_parcel(
     db.commit()
     db.refresh(db_parcel)
     return db_parcel
+
+
+@router.get("/")
+def get_user_parcels(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    parcels = db.query(Parcel).filter(Parcel.user_id == current_user.id).all()
+
+
+    # Convert to dict format to handle enum serialization
+    result = []
+    for parcel in parcels:
+        result.append({
+            "id": parcel.id,
+            "user_id": parcel.user_id,
+            "pickup_address": parcel.pickup_address,
+            "destination_address": parcel.destination_address,
+            "pickup_lat": parcel.pickup_lat,
+            "pickup_lng": parcel.pickup_lng,
+            "destination_lat": parcel.destination_lat,
+            "destination_lng": parcel.destination_lng,
+            "weight_category": parcel.weight_category.value if hasattr(parcel.weight_category, 'value') else str(parcel.weight_category),
+            "quote_amount": parcel.quote_amount,
+            "status": parcel.status.value if hasattr(parcel.status, 'value') else str(parcel.status),
+            "present_location": parcel.present_location,
+            "distance_km": parcel.distance_km,
+            "duration_mins": parcel.duration_mins,
+            "created_at": parcel.created_at.isoformat() if parcel.created_at else None,
+            "updated_at": parcel.updated_at.isoformat() if parcel.updated_at else None
+        })
+    
+    return result
