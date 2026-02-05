@@ -209,3 +209,45 @@ def cancel_parcel(
     db.commit()
     db.refresh(parcel)
     return parcel
+
+@router.put("/{parcel_id}/admin", response_model=ParcelResponse)
+def admin_update_parcel(
+    parcel_id: int,
+    update_data: ParcelUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_admin)
+):
+    parcel = db.query(Parcel).filter(Parcel.id == parcel_id).first()
+    
+    if not parcel:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Parcel not found"
+        )
+    
+    # Store old values for email notifications
+    old_status = parcel.status
+    old_location = parcel.present_location
+    
+    # Update status if provided
+    if update_data.status:
+        parcel.status = update_data.status
+    
+    # Update present location if provided
+    if update_data.present_location:
+        parcel.present_location = update_data.present_location
+    
+    db.commit()
+    db.refresh(parcel)
+    
+    # Send email notifications if values changed
+    user = db.query(User).filter(User.id == parcel.user_id).first()
+    
+    if update_data.status and update_data.status != old_status:
+        email_service.send_status_update(user.email, parcel.id, update_data.status)
+    
+    if (update_data.present_location and 
+        update_data.present_location != old_location):
+        email_service.send_location_update(user.email, parcel.id, update_data.present_location)
+    
+    return parcel
