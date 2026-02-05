@@ -32,3 +32,9 @@ class Parcel(Base):
     pickup_lng = Column(Float, nullable=False)
     destination_lat = Column(Float, nullable=False)
     destination_lng = Column(Float, nullable=False)
+
+    # Parcel details
+    weight_category = Column(Enum(WeightCategory), nullable=False)
+    quote_amount = Column(Float, nullable=False)
+    status = Column(Enum(ParcelStatus), default=ParcelStatus.pending, nullable=False)
+    present_location = Column(String, nullable=True)
