@@ -65,8 +65,7 @@ def get_user_parcels(
 ):
     parcels = db.query(Parcel).filter(Parcel.user_id == current_user.id).all()
 
-
-    # Convert to dict format to handle enum serialization
+    # Converted to dict format to handle serialization
     result = []
     for parcel in parcels:
         result.append({
@@ -89,3 +88,90 @@ def get_user_parcels(
         })
     
     return result
+
+# Simplifying the admin endpoint to return basic parcel info only
+@router.get("/all")
+def get_all_parcels(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_admin)
+):
+    """Admin endpoint to get all parcels"""
+    parcels = db.query(Parcel).all()
+    return parcels
+
+
+@router.get("/{parcel_id}", response_model=ParcelResponse)
+def get_parcel(
+    parcel_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    parcel = db.query(Parcel).filter(Parcel.id == parcel_id).first()
+    
+    if not parcel:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Parcel not found"
+        )
+    
+    # Users can only see their own parcels unless they're admin
+    if parcel.user_id != current_user.id and not current_user.is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authorized to view this parcel"
+        )
+    
+    return parcel
+
+@router.put("/{parcel_id}/destination", response_model=ParcelResponse)
+def update_parcel_destination(
+    parcel_id: int,
+    update_data: ParcelUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    parcel = db.query(Parcel).filter(Parcel.id == parcel_id).first()
+    
+    if not parcel:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Parcel not found"
+        )
+    
+    # Only parcel owner can update destination
+    if parcel.user_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authorized to update this parcel"
+        )
+    
+    # Can't update if already delivered or cancelled
+    if parcel.status in ['delivered', 'cancelled']:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Cannot update parcel with status: {parcel.status}"
+        )
+    
+    # Update destination if provided
+    if update_data.destination_address:
+        parcel.destination_address = update_data.destination_address
+    
+    if update_data.destination_lat and update_data.destination_lng:
+        parcel.destination_lat = update_data.destination_lat
+        parcel.destination_lng = update_data.destination_lng
+        
+        # Recalculate distance and quote
+        origin = (parcel.pickup_lat, parcel.pickup_lng)
+        destination = (parcel.destination_lat, parcel.destination_lng)
+        
+        distance_info = maps_service.calculate_distance_matrix(origin, destination)
+        if distance_info:
+            parcel.distance_km = distance_info['distance']['value'] / 1000
+            parcel.duration_mins = int(distance_info['duration']['value'] / 60)  # Convert to integer
+            parcel.quote_amount = maps_service.calculate_quote(
+                parcel.weight_category, parcel.distance_km
+            )
+    
+    db.commit()
+    db.refresh(parcel)
+    return parcel
