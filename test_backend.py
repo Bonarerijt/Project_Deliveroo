@@ -18,3 +18,41 @@ def test_auth():
     except Exception as e:
         print(f"❌ Cannot connect to backend: {e}")
         return
+    
+    # Test login with admin credentials
+    try:
+        login_data = {
+            'username': 'admin@deliveroo.com',
+            'password': 'admin123'
+        }
+        
+        response = requests.post(
+            f"{base_url}/auth/login",
+            data=login_data,
+            headers={'Content-Type': 'application/x-www-form-urlencoded'}
+        )
+        
+        if response.status_code == 200:
+            data = response.json()
+            if 'access_token' in data:
+                print("✅ Admin login successful")
+                token = data['access_token']
+                
+                # Test protected endpoint
+                headers = {'Authorization': f'Bearer {token}'}
+                parcels_response = requests.get(f"{base_url}/parcels/", headers=headers)
+                
+                if parcels_response.status_code == 200:
+                    print("✅ Protected endpoint access successful")
+                    parcels = parcels_response.json()
+                    print(f"📦 Found {len(parcels)} parcels")
+                else:
+                    print("❌ Protected endpoint access failed")
+            else:
+                print("❌ No access token in response")
+        else:
+            print(f"❌ Login failed: {response.status_code} - {response.text}")
+            
+    except Exception as e:
+        print(f"❌ Login test failed: {e}")
+    
