@@ -1,6 +1,18 @@
 import axios from 'axios';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+// Handle environment variable - use placeholder if not set
+// This allows the frontend to deploy even without backend
+const getApiUrl = () => {
+  const envUrl = process.env.REACT_APP_API_URL;
+  // If URL is empty, undefined, or looks like a secret reference, use placeholder
+  if (!envUrl || envUrl.trim() === '' || envUrl.startsWith('@vercel_secret')) {
+    console.warn('REACT_APP_API_URL not set - API calls will fail until backend is deployed');
+    return 'https://placeholder-api.example.com';
+  }
+  return envUrl;
+};
+
+const API_BASE_URL = getApiUrl();
 
 // Create axios instance with default config
 const api = axios.create({
