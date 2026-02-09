@@ -1,7 +1,7 @@
-# Homereps Connect - Setup Guide for Collaborators
+# Deliveroo - Setup Guide
 
 ## Overview
-Homereps Connect is a full-stack courier service platform built with FastAPI (backend) and React (frontend). This guide will help you get the application running on your local machine.
+Deliveroo is a full-stack courier service platform built with FastAPI (backend) and React (frontend). This guide will help you get the application running on your local machine.
 
 ## Prerequisites
 Before starting, ensure you have the following installed:
@@ -14,8 +14,8 @@ Before starting, ensure you have the following installed:
 
 ### 1. Clone the Repository
 ```bash
-git clone git@github.com:Kimutaijeremy/Homereps-Connect.git
-cd Homereps-Connect
+git clone <repository-url>
+cd Deliveroo
 ```
 
 ### 2. Backend Setup
@@ -53,7 +53,7 @@ cp .env.example .env
 
 Edit the `.env` file with your configuration:
 ```env
-DATABASE_URL=postgresql://username:password@localhost:5432/homereps_connect
+DATABASE_URL=postgresql://username:password@localhost:5432/deliveroo
 SECRET_KEY=your-secret-key-here
 ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=30
@@ -65,7 +65,7 @@ ENVIRONMENT=development
 
 **For Quick Development (SQLite):**
 ```env
-DATABASE_URL=sqlite:///./homereps_connect.db
+DATABASE_URL=sqlite:///deliveroo.db
 SECRET_KEY=dev-secret-key-change-in-production
 ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=30
@@ -226,7 +226,7 @@ git push origin feature/your-feature-name
 ## Project Structure
 
 ```
-Homereps-Connect/
+Deliveroo/
 ├── backend/                 # FastAPI backend
 │   ├── app/
 │   │   ├── main.py         # FastAPI application
