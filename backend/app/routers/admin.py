@@ -1,36 +1,28 @@
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database.database import get_db
 from app.models.user import User
 from app.models.parcel import Parcel
-from jose import JWTError, jwt
-import os
+from app.services.auth import get_current_admin
 
-router = APIRouter()
+router = APIRouter(prefix="/admin", tags=["admin"])
 
-SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-change-in-production")
-ALGORITHM = "HS256"
+@router.get("/users")
+def get_all_users(db: Session = Depends(get_db), current_admin = Depends(get_current_admin)):
+    """Get all users (admin only)"""
+    users = db.query(User).all()
+    return [{"id": u.id, "email": u.email, "full_name": u.full_name, "is_admin": u.is_admin, "created_at": u.created_at} for u in users]
 
-def get_current_admin(request: Request, db: Session = Depends(get_db)):
-    authorization = request.headers.get("Authorization")
-    if not authorization:
-        raise HTTPException(status_code=401, detail="Not authenticated")
+@router.get("/database-stats")
+def get_database_stats(db: Session = Depends(get_db), current_admin = Depends(get_current_admin)):
+    """Get database statistics (admin only)"""
+    user_count = db.query(User).count()
+    parcel_count = db.query(Parcel).count()
     
-    try:
-        token = authorization.replace("Bearer ", "")
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id: int = payload.get("sub")
-        if user_id is None:
-            raise HTTPException(status_code=401, detail="Invalid token")
-    except JWTError:
-        raise HTTPException(status_code=401, detail="Invalid token")
-    
-    user = db.query(User).filter(User.id == user_id).first()
-    if not user or not user.is_admin:
-        raise HTTPException(status_code=403, detail="Admin access required")
-    return user
-
-@router.get("/admin/parcels")
-def get_admin_parcels(db: Session = Depends(get_db), current_admin: User = Depends(get_current_admin)):
-    parcels = db.query(Parcel).all()
-    return parcels
+    return {
+        "total_users": user_count,
+        "total_parcels": parcel_count,
+        "admin_users": db.query(User).filter(User.is_admin == True).count(),
+        "pending_parcels": db.query(Parcel).filter(Parcel.status == "pending").count(),
+        "delivered_parcels": db.query(Parcel).filter(Parcel.status == "delivered").count(),
+    }

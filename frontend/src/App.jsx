@@ -219,7 +219,7 @@ function App() {
         }}
       />
       <AuthProvider>
-        <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+        <Router>
           <AppRoutes />
         </Router>
       </AuthProvider>
