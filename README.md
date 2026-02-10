@@ -4,23 +4,23 @@ A full-stack courier service application built with FastAPI (backend) and React 
 
 ## Features Implemented
 
-### MVP Features ✅
-- ✅ Users can create an account and log in
-- ✅ Users can create a parcel delivery order
-- ✅ Users can change the destination of a parcel delivery order
-- ✅ Users can cancel a parcel delivery order
-- ✅ Users can see the details of a delivery order
-- ✅ Admin can change the status and present location of a parcel delivery order
-- 🚧 Google Maps integration (basic structure ready, needs API key)
+### MVP Features 
+-  Users can create an account and log in
+-  Users can create a parcel delivery order
+-  Users can change the destination of a parcel delivery order
+-  Users can cancel a parcel delivery order
+-  Users can see the details of a delivery order
+-  Admin can change the status and present location of a parcel delivery order
+-  Google Maps integration (basic structure ready, needs API key)
 
-### Optional Features ✅
-- ✅ Real-time email notifications when Admin changes parcel status
-- ✅ Real-time email notifications when Admin changes parcel location
+### Optional Features 
+-  Real-time email notifications when Admin changes parcel status
+-  Real-time email notifications when Admin changes parcel location
 
-### Business Rules ✅
-- ✅ Users can only cancel/change destination when status is not 'delivered'
-- ✅ Only the user who created the parcel can cancel it
-- ✅ Admin role-based access control
+### Business Rules 
+-  Users can only cancel/change destination when status is not 'delivered'
+-  Only the user who created the parcel can cancel it
+-  Admin role-based access control
 
 ## Tech Stack
 
