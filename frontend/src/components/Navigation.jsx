@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   AppBar,
   Toolbar,
@@ -6,39 +6,46 @@ import {
   Button,
   Box,
   IconButton,
+  Avatar,
   Menu,
   MenuItem,
-  Avatar,
-  Divider,
+  Container,
+  useTheme,
+  useMediaQuery,
   Drawer,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
-  useMediaQuery,
-  useTheme,
+  ListItemButton,
+  Divider,
 } from '@mui/material';
 import {
-  LocalShipping as TruckIcon,
-  AccountCircle as AccountIcon,
-  Dashboard as DashboardIcon,
-  Add as AddIcon,
-  AdminPanelSettings as AdminIcon,
-  Logout as LogoutIcon,
   Menu as MenuIcon,
+  Dashboard as DashboardIcon,
+  LocalShipping as ParcelsIcon,
+  Add as CreateIcon,
+  Logout as LogoutIcon,
+  Person as PersonIcon,
+  LocalShipping as TruckIcon,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { toast } from 'react-hot-toast';
 import { useAuth } from '../contexts/AuthContext';
+import { alpha } from '@mui/material/styles';
 
 const Navigation = () => {
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { user, logout } = useAuth();
+  
+  const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
+  };
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -49,229 +56,203 @@ const Navigation = () => {
   };
 
   const handleLogout = () => {
-    logout();
-    toast.success('Logged out successfully');
-    navigate('/login');
     handleMenuClose();
-  };
-
-  const isActive = (path) => location.pathname === path;
-
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
+    logout();
+    navigate('/login');
   };
 
   const menuItems = [
-    { text: 'Dashboard', path: '/dashboard', icon: <DashboardIcon /> },
-    { text: 'My Parcels', path: '/parcels', icon: <TruckIcon /> },
-    { text: 'New Delivery', path: '/create', icon: <AddIcon /> },
-    ...(user?.is_admin ? [{ text: 'Admin', path: '/admin', icon: <AdminIcon /> }] : []),
+    { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
+    { text: 'My Parcels', icon: <ParcelsIcon />, path: '/parcels' },
+    { text: 'New Delivery', icon: <CreateIcon />, path: '/create' },
   ];
 
   const drawer = (
-    <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center', width: 250 }}>
-      <Box sx={{ p: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, justifyContent: 'center' }}>
-          <TruckIcon sx={{ fontSize: 24, color: 'primary.main' }} />
-          <Typography variant="h6" sx={{ fontWeight: 700, color: 'primary.main' }}>
-            Deliveroo
-          </Typography>
+    <Box sx={{ width: 280 }}>
+      <Box sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
+        <Box
+          sx={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 48,
+            height: 48,
+            borderRadius: '12px',
+            background: 'linear-gradient(135deg, #0066FF 0%, #00D4AA 100%)',
+          }}
+        >
+          <TruckIcon sx={{ fontSize: 24, color: 'white' }} />
         </Box>
-        {user && (
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-            {user.email}
-          </Typography>
-        )}
+        <Typography variant="h6" fontWeight={800}>
+          Deliveroo
+        </Typography>
       </Box>
+      <Divider />
       <List>
         {menuItems.map((item) => (
-          <ListItem
-            key={item.text}
-            button
-            onClick={() => navigate(item.path)}
-            sx={{
-              bgcolor: isActive(item.path) ? 'rgba(0, 102, 255, 0.1)' : 'transparent',
-              color: isActive(item.path) ? 'primary.main' : 'text.primary',
-            }}
-          >
-            <ListItemIcon sx={{ color: 'inherit' }}>{item.icon}</ListItemIcon>
-            <ListItemText primary={item.text} />
+          <ListItem key={item.text} disablePadding>
+            <ListItemButton
+              selected={location.pathname === item.path}
+              onClick={() => {
+                navigate(item.path);
+                setMobileOpen(false);
+              }}
+              sx={{
+                mx: 1,
+                borderRadius: 2,
+                mb: 0.5,
+                '&.Mui-selected': {
+                  bgcolor: alpha('#0066FF', 0.1),
+                  '&:hover': {
+                    bgcolor: alpha('#0066FF', 0.15),
+                  },
+                },
+              }}
+            >
+              <ListItemIcon sx={{ color: location.pathname === item.path ? 'primary.main' : 'text.secondary' }}>
+                {item.icon}
+              </ListItemIcon>
+              <ListItemText 
+                primary={item.text}
+                primaryTypographyProps={{ fontWeight: location.pathname === item.path ? 600 : 400 }}
+              />
+            </ListItemButton>
           </ListItem>
         ))}
-        <Divider sx={{ my: 1 }} />
-        <ListItem button onClick={handleLogout}>
-          <ListItemIcon><LogoutIcon /></ListItemIcon>
-          <ListItemText primary="Logout" />
-        </ListItem>
       </List>
     </Box>
   );
 
   return (
-    <AppBar
-      position="sticky"
-      sx={{
-        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%)',
-        backdropFilter: 'blur(10px)',
-        boxShadow: '0 4px 20px rgba(0, 102, 255, 0.1)',
-        color: 'text.primary',
-      }}
-    >
-      <Toolbar>
-        {/* Mobile Menu Button */}
-        {isMobile && (
-          <IconButton
-            color="inherit"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{ mr: 2 }}
-          >
-            <MenuIcon />
-          </IconButton>
-        )}
-        
-        {/* Logo */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexGrow: 1 }}>
-          <TruckIcon sx={{ fontSize: 32, color: 'primary.main' }} />
-          <Typography
-            variant="h5"
-            sx={{
-              fontWeight: 800,
-              background: 'linear-gradient(135deg, #0066FF 0%, #00D4AA 100%)',
-              backgroundClip: 'text',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-            }}
-          >
-            Deliveroo
-          </Typography>
-        </Box>
-
-        {/* Navigation Links - Desktop Only */}
-        {!isMobile && (
-        <Box sx={{ display: 'flex', gap: 1, mr: 2 }}>
-          <Button
-            startIcon={<DashboardIcon />}
-            onClick={() => navigate('/dashboard')}
-            sx={{
-              color: isActive('/dashboard') ? 'primary.main' : 'text.secondary',
-              fontWeight: isActive('/dashboard') ? 600 : 400,
-              '&:hover': { bgcolor: 'rgba(0, 102, 255, 0.1)' },
-            }}
-          >
-            Dashboard
-          </Button>
-          
-          <Button
-            startIcon={<TruckIcon />}
-            onClick={() => navigate('/parcels')}
-            sx={{
-              color: isActive('/parcels') ? 'primary.main' : 'text.secondary',
-              fontWeight: isActive('/parcels') ? 600 : 400,
-              '&:hover': { bgcolor: 'rgba(0, 102, 255, 0.1)' },
-            }}
-          >
-            My Parcels
-          </Button>
-          
-          <Button
-            startIcon={<AddIcon />}
-            onClick={() => navigate('/create')}
-            sx={{
-              color: isActive('/create') ? 'primary.main' : 'text.secondary',
-              fontWeight: isActive('/create') ? 600 : 400,
-              '&:hover': { bgcolor: 'rgba(0, 102, 255, 0.1)' },
-            }}
-          >
-            New Delivery
-          </Button>
-
-          {user?.is_admin && (
-            <Button
-              startIcon={<AdminIcon />}
-              onClick={() => navigate('/admin')}
-              sx={{
-                color: isActive('/admin') ? 'primary.main' : 'text.secondary',
-                fontWeight: isActive('/admin') ? 600 : 400,
-                '&:hover': { bgcolor: 'rgba(0, 102, 255, 0.1)' },
-              }}
-            >
-              Admin
-            </Button>
-          )}
-        </Box>
-        )}
-
-        {/* User Menu - Desktop Only */}
-        {!isMobile && (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          {user && (
-            <Typography variant="body2" color="text.secondary">
-              Welcome, {user.email.split('@')[0]}
-            </Typography>
-          )}
-          
-          <IconButton
-            onClick={handleMenuOpen}
-            sx={{
-              bgcolor: 'rgba(0, 102, 255, 0.1)',
-              '&:hover': { bgcolor: 'rgba(0, 102, 255, 0.2)' },
-            }}
-          >
-            <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.main' }}>
-              <AccountIcon />
-            </Avatar>
-          </IconButton>
-        </Box>
-        )}
-
-        {/* User Menu Dropdown */}
-        <Menu
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={handleMenuClose}
-          sx={{
-            '& .MuiPaper-root': {
-              borderRadius: 2,
-              minWidth: 200,
-              boxShadow: '0 8px 32px rgba(0, 102, 255, 0.15)',
-            },
-          }}
-        >
-          <MenuItem disabled>
-            <Box>
-              <Typography variant="body2" fontWeight={600}>
-                {user?.email}
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
-                {user?.is_admin ? 'Administrator' : 'User'}
+    <>
+      <AppBar
+        position="sticky"
+        elevation={0}
+        sx={{
+          bgcolor: 'background.paper',
+          borderBottom: '1px solid',
+          borderColor: 'divider',
+        }}
+      >
+        <Container maxWidth="xl">
+          <Toolbar sx={{ px: { xs: 0 } }}>
+            {isMobile && (
+              <IconButton
+                color="inherit"
+                aria-label="open drawer"
+                edge="start"
+                onClick={handleDrawerToggle}
+                sx={{ mr: 2, color: 'text.primary' }}
+              >
+                <MenuIcon />
+              </IconButton>
+            )}
+            
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Box
+                sx={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: 40,
+                  height: 40,
+                  borderRadius: '10px',
+                  background: 'linear-gradient(135deg, #0066FF 0%, #00D4AA 100%)',
+                }}
+              >
+                <TruckIcon sx={{ fontSize: 22, color: 'white' }} />
+              </Box>
+              <Typography
+                variant="h6"
+                sx={{
+                  fontWeight: 800,
+                  background: 'linear-gradient(135deg, #0066FF 0%, #00D4AA 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  display: { xs: 'none', sm: 'block' },
+                }}
+              >
+                Deliveroo
               </Typography>
             </Box>
-          </MenuItem>
-          
-          <Divider />
-          
-          <MenuItem onClick={handleLogout}>
-            <LogoutIcon sx={{ mr: 2, fontSize: 20 }} />
-            Logout
-          </MenuItem>
-        </Menu>
-        
-        {/* Mobile Drawer */}
-        <Drawer
-          variant="temporary"
-          open={mobileOpen}
-          onClose={handleDrawerToggle}
-          ModalProps={{ keepMounted: true }}
-          sx={{
-            display: { xs: 'block', md: 'none' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: 250 },
-          }}
-        >
-          {drawer}
-        </Drawer>
-      </Toolbar>
-    </AppBar>
+
+            {!isMobile && (
+              <Box sx={{ display: 'flex', gap: 1, ml: 4 }}>
+                {menuItems.map((item) => (
+                  <Button
+                    key={item.text}
+                    onClick={() => navigate(item.path)}
+                    startIcon={item.icon}
+                    sx={{
+                      color: location.pathname === item.path ? 'primary.main' : 'text.secondary',
+                      fontWeight: location.pathname === item.path ? 600 : 400,
+                      bgcolor: location.pathname === item.path ? alpha('#0066FF', 0.1) : 'transparent',
+                      '&:hover': {
+                        bgcolor: alpha('#0066FF', 0.1),
+                      },
+                    }}
+                  >
+                    {item.text}
+                  </Button>
+                ))}
+              </Box>
+            )}
+
+            <Box sx={{ flexGrow: 1 }} />
+
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <IconButton onClick={handleMenuOpen}>
+                <Avatar
+                  sx={{
+                    width: 36,
+                    height: 36,
+                    bgcolor: 'primary.main',
+                    fontSize: '0.875rem',
+                    fontWeight: 600,
+                  }}
+                >
+                  {user?.name?.charAt(0)?.toUpperCase() || 'U'}
+                </Avatar>
+              </IconButton>
+              
+              <Menu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleMenuClose}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+              >
+                <MenuItem disabled>
+                  <Typography variant="body2" color="text.secondary">
+                    {user?.email}
+                  </Typography>
+                </MenuItem>
+                <Divider />
+                <MenuItem onClick={handleLogout}>
+                  <ListItemIcon>
+                    <LogoutIcon fontSize="small" />
+                  </ListItemIcon>
+                  Logout
+                </MenuItem>
+              </Menu>
+            </Box>
+          </Toolbar>
+        </Container>
+      </AppBar>
+
+      <Drawer
+        variant="temporary"
+        open={mobileOpen}
+        onClose={handleDrawerToggle}
+        ModalProps={{ keepMounted: true }}
+        sx={{
+          display: { xs: 'block', md: 'none' },
+          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: 280 },
+        }}
+      >
+        {drawer}
+      </Drawer>
+    </>
   );
 };
 
