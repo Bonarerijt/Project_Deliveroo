@@ -31,13 +31,21 @@ app = FastAPI(
 
 # Configure CORS with environment variable
 frontend_url = os.getenv("FRONTEND_URL", "http://localhost:3000")
-allowed_origins = [frontend_url, "http://localhost:3000", "http://localhost:5173"]
+allowed_origins = [
+    frontend_url,
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "https://project-deliveroo-two.vercel.app",
+    "https://project-deliveroo-taupe.vercel.app",
+]
+
+# Allow all Vercel preview deployments
 if os.getenv("ENVIRONMENT") == "production":
     allowed_origins.append("https://*.vercel.app")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed_origins,
+    allow_origins=["*"],  # Allow all origins for now
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["*"],
