@@ -222,4 +222,4 @@ REACT_APP_GOOGLE_MAPS_API_KEY=your-google-maps-api-key
 
 ## License
 
-MIT License - see [LICENSE] file for details
+MIT License - see [LICENSE](LICENSE) file for details
