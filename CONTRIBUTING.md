@@ -9,8 +9,8 @@
 ## File Ownership
 Only edit files assigned to you.
 
-🔧 BACKEND TEAM
-👩🏽‍💻 Backend Member 1 – Auth & Security
+### BACKEND TEAM
+#### Backend Member 1 – Auth & Security
 
 Scope: Authentication, authorization, route protection
 
@@ -24,7 +24,7 @@ backend/app/models/user.py
 
 backend/app/schemas/user.py
 
-backend/app/middleware/security.py ✅ (newly added)
+backend/app/middleware/security.py
 
 Notes:
 
@@ -32,7 +32,7 @@ Owns JWT logic, role checks, and dependencies like get_current_user
 
 Other members may import from security.py but must not edit it
 
-👨🏽‍💻 Backend Member 2 – Parcels
+#### Backend Member 2 – Parcels
 
 Scope: Parcel lifecycle and business rules
 
@@ -50,7 +50,7 @@ Enforces rules like “cannot edit if delivered”
 
 Handles ownership validation (user can only cancel own parcel)
 
-👩🏽‍💻 Backend Member 3 – Admin & Notifications
+#### Backend Member 3 – Admin & Notifications
 
 Scope: Admin-only actions and external services
 
@@ -68,8 +68,8 @@ Uses security dependencies but does not modify them
 
 Handles email triggers and map-related backend logic
 
-🎨 FRONTEND TEAM
-👩🏽‍💻 Frontend Member 4 – User UI & State
+### FRONTEND TEAM
+#### Frontend Member 4 – User UI & State
 
 Scope: User-facing screens and auth state
 
@@ -83,7 +83,7 @@ frontend/src/pages/Dashboard.jsx
 
 frontend/src/contexts/AuthContext.jsx
 
-👨🏽‍💻 Frontend Member 5 – Maps & Admin UI
+#### Frontend Member 5 – Maps & Admin UI
 
 Scope: Maps visualization and admin interface
 

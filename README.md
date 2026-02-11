@@ -1,26 +1,39 @@
 # Deliveroo - Courier Service Platform
 
-A full-stack courier service application built with FastAPI (backend) and React (frontend).
+#### Date 11/2/2026
 
-## Features Implemented
+## Project overview
 
-### MVP Features ✅
-- ✅ Users can create an account and log in
-- ✅ Users can create a parcel delivery order
-- ✅ Users can change the destination of a parcel delivery order
-- ✅ Users can cancel a parcel delivery order
-- ✅ Users can see the details of a delivery order
-- ✅ Admin can change the status and present location of a parcel delivery order
-- 🚧 Google Maps integration (basic structure ready, needs API key)
+Deliveroo is a full-stack courier service web application that enables users to create, manage, and track parcel deliveries in real time. It features secure JWT-based authentication, role-based access control, and interactive map tracking. The system is built with FastAPI, React, and PostgreSQL.
 
-### Optional Features ✅
-- ✅ Real-time email notifications when Admin changes parcel status
-- ✅ Real-time email notifications when Admin changes parcel location
+## Authors
+- Judy Ogachi
+- Collins Kiaritha
+- Jeremy Kimutai
+- Joseph Kimuhu
+- Martin Mbatia
 
-### Business Rules ✅
-- ✅ Users can only cancel/change destination when status is not 'delivered'
-- ✅ Only the user who created the parcel can cancel it
-- ✅ Admin role-based access control
+## Features Overview
+
+### User Features
+1. **Registration & Login** - Secure JWT-based authentication
+2. **Dashboard** - Overview of deliveries with charts and statistics
+3. **Create Parcel** - Multi-step form with quote calculation
+4. **Parcel Management** - View, edit destination, cancel parcels
+5. **Real-time Tracking** - Status updates and location tracking
+
+### Admin Features
+1. **Admin Dashboard** - Manage all system parcels
+2. **Status Management** - Update parcel status and location
+3. **User Management** - View all users and their parcels
+4. **System Analytics** - Overview of platform performance
+
+### Security Features
+1. **Password Hashing** - bcrypt for secure password storage
+2. **JWT Authentication** - Stateless authentication
+3. **Role-based Access** - Admin vs User permissions
+4. **Input Validation** - Pydantic schemas for API validation
+5. **Security Headers** - CORS, rate limiting, trusted hosts
 
 ## Tech Stack
 
@@ -30,12 +43,11 @@ A full-stack courier service application built with FastAPI (backend) and React 
 - **SQLAlchemy** - ORM
 - **JWT** - Authentication
 - **bcrypt** - Password hashing
-- **SendGrid** - Email notifications
-- **Google Maps API** - Distance/route calculations
+- **OpenStreetMap** - Distance/route calculations
 
 ### Frontend
 - **React** - UI framework
-- **TypeScript** - Type safety
+- **JavaScript** - Flexibility/dynamic typing
 - **Material-UI** - Component library
 - **React Router** - Navigation
 - **Axios** - HTTP client
@@ -51,8 +63,8 @@ A full-stack courier service application built with FastAPI (backend) and React 
 
 ### 1. Clone Repository
 ```bash
-git clone <repository-url>
-cd deliveroo
+git clone git@github.com:Bonarerijt/project_deliveroo.git
+cd project_deliveroo
 ```
 
 ### 2. Backend Setup
@@ -88,6 +100,7 @@ npm start
 - Frontend: http://localhost:3000
 - Backend API: http://localhost:8000
 - API Documentation: http://localhost:8000/docs
+- Deployed link: https://project-deliveroo-two.vercel.app/
 
 ## Demo Accounts
 
@@ -139,36 +152,6 @@ REACT_APP_GOOGLE_MAPS_API_KEY=your-google-maps-api-key
 - `GET /parcels/all` - Get all parcels (admin only)
 - `PUT /parcels/{id}/admin` - Update parcel status/location (admin only)
 
-## Database Schema
-
-### Users Table
-- id, email, full_name, hashed_password, is_admin, is_active, created_at
-
-### Parcels Table
-- id, user_id, pickup_address, destination_address, weight_category, quote_amount, status, present_location, distance_km, duration_mins, created_at, updated_at
-
-## Features Overview
-
-### User Features
-1. **Registration & Login** - Secure JWT-based authentication
-2. **Dashboard** - Overview of deliveries with charts and statistics
-3. **Create Parcel** - Multi-step form with quote calculation
-4. **Parcel Management** - View, edit destination, cancel parcels
-5. **Real-time Tracking** - Status updates and location tracking
-
-### Admin Features
-1. **Admin Dashboard** - Manage all system parcels
-2. **Status Management** - Update parcel status and location
-3. **User Management** - View all users and their parcels
-4. **System Analytics** - Overview of platform performance
-
-### Security Features
-1. **Password Hashing** - bcrypt for secure password storage
-2. **JWT Authentication** - Stateless authentication
-3. **Role-based Access** - Admin vs User permissions
-4. **Input Validation** - Pydantic schemas for API validation
-5. **Security Headers** - CORS, rate limiting, trusted hosts
-
 ## Development Notes
 
 ### Google Maps Integration
@@ -178,8 +161,6 @@ REACT_APP_GOOGLE_MAPS_API_KEY=your-google-maps-api-key
 - Ready for production with proper API key
 
 ### Email Notifications
-- SendGrid integration implemented
-- Falls back to console logging without API key
 - Sends notifications on status/location changes
 
 ### Database
@@ -233,6 +214,12 @@ REACT_APP_GOOGLE_MAPS_API_KEY=your-google-maps-api-key
 4. Add tests
 5. Submit pull request
 
+## Acknowledgments
+- Our technical mentors for their guidance, insightful feedback, and continuous support throughout the development process.
+- Moringa School for the opportunity to build this platform
+- The open-source community for the amazing tools and libraries
+- All team members for their dedication and hard work
+
 ## License
 
-MIT License - see LICENSE file for details
+MIT License - see [LICENSE] file for details
